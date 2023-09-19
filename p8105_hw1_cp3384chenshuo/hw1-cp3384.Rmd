@@ -18,7 +18,7 @@ library(tidyverse)
 #load dataset
 data("early_january_weather")
 ```
-This is a data set describing the weather at Newark Airport for each time period in January 2013. Specific variables include:`r names(early_january_weather) `
+_Answer_: This is a data set describing the weather at Newark Airport for each time period in January 2013. Specific variables include:`r names(early_january_weather) `
 
 This is a dataset has `r nrow(early_january_weather) ` rows, and `r ncol(early_january_weather) ` columns. The average temperature in January is`r mean(early_january_weather$temp) 
 
@@ -91,10 +91,16 @@ mean(pull(Desired_dataframe,character_sample))
 mean(pull(Desired_dataframe,factor_sample))
 ```
 
+_Answer_: There is a mean in numerical and logical values. In logical values, True is 1 and False is 0. Other variables such as factor and character cannot calculate mean.
 
 
+```{r,apply as numeric,eval=FALSE}
+as.numeric(pull(Desired_dataframe,factor_sample))
+as.numeric(pull(Desired_dataframe,character_sample))
+as.numeric(pull(Desired_dataframe,logical_sample))
+```
 
-
+_Answer_: The factor variables will be converted to numbers corresponding to the levels. For example, in my data frame, first is converted to 1, second is converted to 2.... This function cannot be used with characters variable. True in the logical variable is converted to 1 and False is converted to 0.This helps me explain why logistic variables have averages, but factor variables don't.
 
 
 
