@@ -3,19 +3,20 @@ title: "Simple document"
 output: github_document
 ---
 
-I'm an R Markdown document! 
 
-# Section 1
-
-Here's a **code chunk** that samples from 
-a _normal distribution_:
+# Question 1
 
 ```{r}
-samp = rnorm(100)
-length(samp)
+#Load the moderndive library
+library(moderndive)
 ```
 
-# Section 2
 
-I can take the mean of the sample, too!
-The mean is `r mean(samp)`.
+```{r}
+#load dataset
+data("early_january_weather")
+```
+This is a data set describing the weather at Newark Airport for each time period in January 2013. Specific variables include:`r names(early_january_weather) `
+
+This is a dataset has `r nrow(early_january_weather) ` rows, and `r ncol(early_january_weather) ` columns. The average temperature in January is`r mean(early_january_weather$temp) `
+
