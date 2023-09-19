@@ -10,6 +10,7 @@ output: github_document
 #Load the moderndive library
 library(moderndive)
 library(ggplot2)
+library(tidyverse)
 ```
 
 
@@ -39,9 +40,56 @@ ggsave(filename = ("./scatterplotQ1.png"))
 # Question 2
 
 
+```{r,create dataframe}
+#Set seed to make sure each time we will get same number
+set.seed(666)
+
+#Create a random sample of size 10 from a standard Normal distribution
+
+random_sample <- rnorm(10)
+
+#Create a logical vector indicating whether elements of the sample are greater than 0
+
+logical_sample <- random_sample > 0
+
+#Create a character vector of length 10
+
+character_sample <- LETTERS[1:10]
+
+#Create a factor vector of length 10, with 3 different factor “levels”
+
+factor_sample <-as.factor(rep(c("First", "Second", "Third"), length = 10))
+
+#Combine all the above data in one dataframe
+
+Desired_dataframe <- data.frame(
+  random_sample,
+  logical_sample,
+  character_sample,
+  factor_sample
+)
+
+Desired_dataframe
+```
 
 
+```{r}
+# Try to see which variables have mean
+# logical and numerical variables have mean
+mean(pull(Desired_dataframe,random_sample))
 
+mean(pull(Desired_dataframe,logical_sample))
+
+```
+```{r}
+# character variable does not have mean
+mean(pull(Desired_dataframe,character_sample))
+```
+
+```{r}
+# factor variable does not have mean
+mean(pull(Desired_dataframe,factor_sample))
+```
 
 
 
