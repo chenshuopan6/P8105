@@ -9,6 +9,7 @@ output: github_document
 ```{r}
 #Load the moderndive library
 library(moderndive)
+library(ggplot2)
 ```
 
 
@@ -19,3 +20,35 @@ data("early_january_weather")
 This is a data set describing the weather at Newark Airport for each time period in January 2013. Specific variables include:`r names(early_january_weather) `
 
 This is a dataset has `r nrow(early_january_weather) ` rows, and `r ncol(early_january_weather) ` columns. The average temperature in January is`r mean(early_january_weather$temp) 
+
+
+```{r,draw scatter plot}
+#make hour vs temp scatter plot
+ggplot(data = early_january_weather,mapping = aes(x = time_hour,y = temp,color = humid))+
+  geom_point()+
+  xlab('Time/hour')+
+  ylab('Temperature')+
+  ggtitle('Scatter plot of hour vs temp ')
+
+```
+
+```{r,download scatter plot}
+ggsave(filename = ("./scatterplotQ1.png"))
+```
+
+# Question 2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
