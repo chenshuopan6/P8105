@@ -3,14 +3,16 @@ title: "HW1_cp3384"
 author: "Chenshuo Pan"
 output: github_document
 ---
-
+```{r,include=FALSE}
+library(tidyverse)
+```
 # Question 1
 
 ```{r}
-#Load the moderndive library
+#Load the moderndive library and ggplot
+#tidyverse also being loaded but hidden.
 library(moderndive)
 library(ggplot2)
-library(tidyverse)
 ```
 
 
@@ -18,9 +20,33 @@ library(tidyverse)
 #load dataset
 data("early_january_weather")
 ```
-_Answer_: This is a data set describing the weather at Newark Airport for each time period in January 2013. Specific variables include:`r names(early_january_weather) `
+_Answer_: 
 
-This is a dataset has `r nrow(early_january_weather) ` rows, and `r ncol(early_january_weather) ` columns. The average temperature in January is`r mean(early_january_weather$temp) 
+This is a data set describing the weather at Newark Airport for each time period in January 2013. Specific variables include:`r names(early_january_weather) `
+
+For Those variables:
+
+**origin**: Weather station. character variables
+
+**year, month, day, hour** :Time of recording. Numeric variables
+
+**temp, dewp** :Temperature and dewpoint in F. Numeric variables
+
+**humid**:Relative humidity.  Numeric variables
+
+**wind_dir** wind_speed, wind_gust :Wind direction (in degrees), speed and gust speed (in mph). Numeric variables
+
+**precip**:Precipitation, in inches. Numeric variables
+
+**pressure** :Sea level pressure in millibars. Numeric variables
+
+**visib** :Visibility in miles. Numeric variables
+
+**time_hour** :Date and hour of the recording as a POSIXct date. time variables
+
+(Above information comes from the official description of dataset` ??early_january_weather `)
+
+This is a dataset has `r nrow(early_january_weather) ` rows, and `r ncol(early_january_weather) ` columns. The average temperature in January is `r mean(early_january_weather$temp) `
 
 
 ```{r,draw scatter plot}
@@ -37,6 +63,12 @@ ggplot(data = early_january_weather,mapping = aes(x = time_hour,y = temp,color =
 ggsave(filename = ("./scatterplotQ1.png"))
 ```
 
+_Answer_:
+Generally speaking, in January, the overall temperature shows an increasing trend from the 1st to the 15th. What's more, the image shows a rising fluctuation, so there is an obvious temperature difference between morning and evening every day. The temperature in the morning is higher than that in the evening.
+
+
+
+
 # Question 2
 
 
@@ -46,7 +78,7 @@ set.seed(666)
 
 #Create a random sample of size 10 from a standard Normal distribution
 
-random_sample <- rnorm(10)
+random_sample <- rnorm(10,mean = 0,sd =1)
 
 #Create a logical vector indicating whether elements of the sample are greater than 0
 
@@ -95,12 +127,19 @@ _Answer_: There is a mean in numerical and logical values. In logical values, Tr
 
 
 ```{r,apply as numeric,eval=FALSE}
+#convert different variables to numeric
 as.numeric(pull(Desired_dataframe,factor_sample))
 as.numeric(pull(Desired_dataframe,character_sample))
 as.numeric(pull(Desired_dataframe,logical_sample))
 ```
 
-_Answer_: The factor variables will be converted to numbers corresponding to the levels. For example, in my data frame, first is converted to 1, second is converted to 2.... This function cannot be used with characters variable. True in the logical variable is converted to 1 and False is converted to 0.This helps me explain why logistic variables have averages, but factor variables don't.
+_Answer_: The factor variables will be converted to numbers corresponding to the levels. For example, in my data frame, first is converted to 1, second is converted to 2....Because the factor variable has finite levels, R will map each category to an integer value, which is why this equation is useful.
+
+True in the logical variable is converted to 1 and False is converted to 0.Because such hidden conversions are allowed in R. And most languages define logical truth and logical falsehood as 1 and 0 respectively.
+
+as.numeric() function cannot be used with characters variable.Because character variables cannot be efficiently converted to numbers in R, this equation is not formulated to convert characters.
+
+After reading `??as.numeric() ` I understand how this equation works for different data types, and I also know which parameters can be used to mean. It is worth noting that for the factor variable, we need to convert it into a numerical value before we can calculate the average. It is invalid to use `mean() ` directly.
 
 
 
