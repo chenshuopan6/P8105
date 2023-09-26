@@ -11,6 +11,14 @@ library(dplyr)
 ```
 
 ```{r}
-
+#read dataset
+pols_month <- read.csv("./data/pols-month.csv")
 ```
 
+```{r}
+pols_month_clean <- 
+  pols_month%>%
+  janitor::clean_names()%>%
+  separate(col = mon , into = c('year','month','day'),sep = '-',convert = TRUE)%>%
+  mutate(month = month.name[month])%>%
+```
