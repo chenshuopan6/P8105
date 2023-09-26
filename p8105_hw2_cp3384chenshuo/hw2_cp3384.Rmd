@@ -1,0 +1,12 @@
+---
+title: "hw2_p8105"
+author: "Chenshuo Pan"
+date: "2023-09-26"
+output: github_document
+---
+
+```{r}
+
+```
+
+
