@@ -13,6 +13,7 @@ library(dplyr)
 ```{r}
 #read dataset
 pols_month <- read.csv("./data/pols-month.csv")
+snp <- read.csv("./data/snp.csv")
 ```
 
 ```{r}
@@ -21,4 +22,29 @@ pols_month_clean <-
   janitor::clean_names()%>%
   separate(col = mon , into = c('year','month','day'),sep = '-',convert = TRUE)%>%
   mutate(month = month.name[month])%>%
+  mutate(president = case_when(
+      prez_dem == 1 ~ "dem",
+      prez_gop == 1 ~ "gop"
+    ))%>%
+  select(-prez_dem, -prez_gop,-day)
 ```
+
+
+```{r}
+snp_clean <- 
+  snp%>%
+  janitor::clean_names()%>%
+  separate(col = date , into = c('month','day','year'),sep = '/',convert = TRUE)%>%
+  mutate(month = month.name[month])%>%
+  relocate(year,month)%>%
+  mutate(month = factor(month,levels = c( "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")))%>%
+  arrange(year,month)
+```
+
+
+
+
+
+
+
+
