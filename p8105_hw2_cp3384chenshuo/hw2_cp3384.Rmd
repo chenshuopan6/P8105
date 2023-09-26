@@ -5,6 +5,8 @@ date: "2023-09-26"
 output: github_document
 ---
 
+* Question1:
+
 ```{r}
 library(tidyverse)
 library(dplyr)
@@ -14,6 +16,7 @@ library(dplyr)
 #read dataset
 pols_month <- read.csv("./data/pols-month.csv")
 snp <- read.csv("./data/snp.csv")
+unemployment <- read.csv("./data/unemployment.csv")
 ```
 
 ```{r}
@@ -41,9 +44,14 @@ snp_clean <-
   arrange(year,month)
 ```
 
+```{r}
+unemployment_clean <- 
+  unemployment%>%
+  pivot_longer(cols = Jan:Dec,names_to = 'month',values_to = 'percent')
+```
 
 
-
+* Question2:
 
 
 
