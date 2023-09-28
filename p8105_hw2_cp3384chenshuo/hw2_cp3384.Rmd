@@ -111,3 +111,64 @@ combine_wheel <- gwynnda_clean%>%
 ```
 
 # Question3:
+
+```{r}
+baseline <- read.csv("./data/MCI_baseline.csv",
+                      skip = 1,
+                     na.strings = c("."))
+  
+```
+
+
+```{r}
+baseline_clean <- baseline%>%
+  janitor::clean_names()%>%
+  mutate(sex = case_when(
+      sex == 0 ~ "Female",
+      sex == 1 ~ "Male"
+    ),
+    apoe4 = case_when(
+      apoe4 == 0 ~ "APOE4 non-carrier",
+      apoe4 == 1 ~ "APOE4 carrie"
+    ))%>%
+  filter(!is.na(age_at_onset))
+```
+
+**Discuss important steps in the import process and relevant features of the dataset.**
+
+The import steps in my view include how to convert `.` into `NA` and appropriately encode sex and apoe4 columns. Here I use `case_when` to do the convention. 
+
+This dataset has `r nrow(baseline)` rows , and `r ncol(baseline)`  columns. After removing participants who do not meet the stated inclusion criteria. The dataset keep `r nrow(baseline_clean)` rows. The important variables in this dataset including : `r names(baseline_clean) `
+
+**How many participants were recruited, and of these how many develop MCI?**
+
+Totally `r nrow(baseline)` participants were recruited, of these `r nrow(baseline_clean)` develop MCI.
+
+**What is the average baseline age? **
+
+The average baseline age is `r average(baseline_clean$age)``
+
+**What proportion of women in the study are APOE4 carriers?**
+
+The proportion of women in the study are APOE4 carriers is `r sum(baseline_clean$sex=='Female')/nrow(baseline_clean)`
+
+```{r}
+amyloid <- read.csv("./data/mci_amyloid.csv",
+                      skip = 1)
+```
+
+```{r}
+amyloid_clean <- amyloid%>%
+  janitor::clean_names()%>%
+  filter(.== 'Na')%>%
+  na.omit()%>%
+```
+
+
+
+
+
+
+
+
+
