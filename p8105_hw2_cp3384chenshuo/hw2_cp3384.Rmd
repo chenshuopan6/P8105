@@ -134,6 +134,7 @@ baseline_clean <- baseline%>%
   filter(!is.na(age_at_onset))
 ```
 
+<<<<<<< HEAD
 **Discuss important steps in the import process and relevant features of the dataset.**
 
 The import steps in my view include how to convert `.` into `NA` and appropriately encode sex and apoe4 columns. Here I use `case_when` to do the convention. 
@@ -172,3 +173,5 @@ amyloid_clean <- amyloid%>%
 
 
 
+=======
+>>>>>>> 45fc1cec79cee67cba1de8e613df9d41ebb04e09
