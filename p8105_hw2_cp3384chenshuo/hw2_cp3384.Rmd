@@ -21,21 +21,33 @@ unemployment <- read.csv("./data/unemployment.csv")
 ```
 
 ```{r}
+#tidy pols dataset
 pols_month_clean <- 
   pols_month%>%
+#clean column names
   janitor::clean_names()%>%
+#separate mon column into year, month and day
   separate(col = mon , into = c('year','month','day'),sep = '-',convert = TRUE)%>%
+#turn the number of month to the month in english
   mutate(month = month.name[month])%>%
+#create president variable to present club
   mutate(president = case_when(
       prez_dem == 1 ~ "dem",
-      prez_gop == 1 ~ "gop"
+      prez_gop %in% c(1,2) ~ "gop"
     ))%>%
+#remove these three variables
   select(-prez_dem, -prez_gop,-day)%>%
+#create a variable using year and month values
   mutate(date = paste(year,month,sep = "-"))
+
+
+
+#mutate(date2 = as.Date(paste(date,"01",sep = "-"),format = "%Y-%B-%d"))
 ```
 
 
 ```{r}
+#do the same thing as 
 snp_clean <- 
   snp%>%
   janitor::clean_names()%>%
@@ -129,12 +141,14 @@ baseline_clean <- baseline%>%
     ),
     apoe4 = case_when(
       apoe4 == 0 ~ "APOE4 non-carrier",
-      apoe4 == 1 ~ "APOE4 carrie"
-    ))%>%
+      apoe4 == 1 ~ "APOE4 carrier"
+    ))
+  
+baseline_filterna <-baseline_clean%>%
   filter(!is.na(age_at_onset))
 ```
 
-<<<<<<< HEAD
+
 **Discuss important steps in the import process and relevant features of the dataset.**
 
 The import steps in my view include how to convert `.` into `NA` and appropriately encode sex and apoe4 columns. Here I use `case_when` to do the convention. 
@@ -151,7 +165,7 @@ The average baseline age is `r average(baseline_clean$age)``
 
 **What proportion of women in the study are APOE4 carriers?**
 
-The proportion of women in the study are APOE4 carriers is `r sum(baseline_clean$sex=='Female')/nrow(baseline_clean)`
+The proportion of women in the study are APOE4 carriers is `r sum(baseline_clean$sex=='Female')/nrow(baseline$sex == 'Female')`
 
 ```{r}
 amyloid <- read.csv("./data/mci_amyloid.csv",
@@ -161,17 +175,32 @@ amyloid <- read.csv("./data/mci_amyloid.csv",
 ```{r}
 amyloid_clean <- amyloid%>%
   janitor::clean_names()%>%
-  filter(.== 'Na')%>%
-  na.omit()%>%
+  rename(id = study_id,
+         Baseline = baseline,
+         After_two_year = time_2,
+         After_four_year= time_4,
+         After_six_year = time_6,
+         After_eight_year = time_8)
+```
+
+
+```{r}
+amyloid_clean%>%
+  anti_join(baseline_clean,by = "id")
+```
+
+```{r}
+baseline_clean%>%
+  anti_join(amyloid_clean,by = "id")
+```
+
+```{r}
+combine_mci <- inner_join(baseline_clean,amyloid_clean,by = "id")
+```
+
+```{r}
+write.csv(combine_mci,file = "./data/combine mci.csv", row.names = TRUE)
 ```
 
 
 
-
-
-
-
-
-
-=======
->>>>>>> 45fc1cec79cee67cba1de8e613df9d41ebb04e09
