@@ -38,41 +38,72 @@ pols_month_clean <-
 #remove these three variables
   select(-prez_dem, -prez_gop,-day)%>%
 #create a variable using year and month values
-  mutate(date = paste(year,month,sep = "-"))
+  mutate(date = paste(year,month,sep = "-"))%>%
+  arrange(year,match(month,month.name))
 
 
-
+#The reason why I do not use Date variable is that We don’t need to determine which day it is because we have excluded the day column. If you need date, you can run the following code. Please note that it is running under an English operating system.
 #mutate(date2 = as.Date(paste(date,"01",sep = "-"),format = "%Y-%B-%d"))
 ```
 
 
 ```{r}
-#do the same thing as 
+#do the same thing to snp as pols dataset
 snp_clean <- 
   snp%>%
   janitor::clean_names()%>%
   separate(col = date , into = c('month','day','year'),sep = '/',convert = TRUE)%>%
   mutate(month = month.name[month])%>%
+  #After observation, there are data from 50-99 and 00-15 in the year column. Based on the actual situation, we distribute the two plus 2000 and 1900 to represent the year.
   mutate(year = case_when(
     between(year, 0, 15) ~ year + 2000,
     between(year, 50, 99) ~ year + 1900,
     TRUE ~ year))%>%
   relocate(year,month)%>%
+  select(-day)%>%
+  #Sort by year and month, use match to sort by month instead of alphabetically
   arrange(year,match(month,month.name))%>%
   mutate(date = paste(year,month,sep = "-"))
 ```
 
 ```{r}
+#Clean the unemployment dataset
 unemployment_clean <- 
   unemployment%>%
+#convert wider table to longer
   pivot_longer(cols = Jan:Dec,names_to = 'month',values_to = 'percent')%>%
-  mutate(date = paste(Year,month,sep = "-"))
+#convert month abbreviation to full name
+  mutate(month = month.name[match(month,month.abb)])%>%
+  mutate(date = paste(Year,month,sep = "-"))%>%
+  arrange(Year,match(month,month.name))
 ```
 
 ```{r}
-combine_table <- inner_join(snp_clean,pols_month_clean,by = "date")%>%
-  inner_join(unemployment_clean,by = 'date')
+combine_table <- snp_clean%>%select(-year,-month)%>%
+  left_join(pols_month_clean%>%select(-year,-month),by = "date")%>%
+  left_join(unemployment_clean%>%select(-Year,-month),,by = 'date')
 ```
+
+
+**Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset**
+
+(All data sets described below are unprocessed)
+
+`pols-month.csv` dataset contains `r nrow(pols_month)` rows and `r ncol(pols_month)` columns. The year range is between `range(pols_month$mon)`. key variables are: `r names(pols_month)`.I decomposed the `mon` column into `year` `month` and created a `president` variable to replace `prez_dem`, `prez_gop`, and finally added a `date` variable to merge the data frames
+
+
+`snp.csv` dataset contains `r nrow(snp)` rows and `r ncol(snp)` columns. The year range is between 
+`r  snp_clean[1,5]` and `r snp_clean[787,5]`. key variables are: `r names(snp)`. Here  I decomposed the `Date` column into `year` `month` and finally added a `date` variable to merge the data frames
+
+
+`unemployment.csv` dataset contains `r nrow(unemployment)` rows and `r ncol(unemployment)` columns. The year range is between 
+`r  unemployment[1,4]` and `r unemployment[816,4]`. key variables are: `r names(unemployment)`. Here A length-width table conversion was performed, and the month variable name was transferred to the `month` column to become a variable, and the retained number was called `percent`and finally added a `date` variable to merge the data frames
+
+Finally, I combined all these three dataset into `combine_table` , which has `r nrow(combine_table)` rows and `r ncol(combine_table)` columns.key variables are: `r names(combine_table)`.
+
+
+
+
 
 # Question2:
 ```{r}
@@ -122,6 +153,30 @@ combine_wheel <- gwynnda_clean%>%
   bind_rows(trash_clean%>%mutate(year = as.numeric(year)))
 ```
 
+
+**Be sure to note the number of observations in the resulting dataset, and give examples of key variables.** 
+
+**For available data, what was the total weight of trash collected by Professor Trash Wheel?**
+
+
+
+
+**What was the total number of cigarette butts collected by Gwynnda in July of 2021?**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Question3:
 
 ```{r}
@@ -153,19 +208,19 @@ baseline_filterna <-baseline_clean%>%
 
 The import steps in my view include how to convert `.` into `NA` and appropriately encode sex and apoe4 columns. Here I use `case_when` to do the convention. 
 
-This dataset has `r nrow(baseline)` rows , and `r ncol(baseline)`  columns. After removing participants who do not meet the stated inclusion criteria. The dataset keep `r nrow(baseline_clean)` rows. The important variables in this dataset including : `r names(baseline_clean) `
+This dataset has `r nrow(baseline)`  rows , and `r ncol(baseline)`  columns. After removing participants who do not meet the stated inclusion criteria. The dataset keep `r nrow(baseline_clean)` rows. The important variables in this dataset including : `r names(baseline_clean) `
 
 **How many participants were recruited, and of these how many develop MCI?**
 
-Totally `r nrow(baseline)` participants were recruited, of these `r nrow(baseline_clean)` develop MCI.
+Totally `r nrow(baseline)` participants were recruited, of these `r nrow(baseline_filterna)` develop MCI.
 
-**What is the average baseline age? **
+**What is the average baseline age?**
 
-The average baseline age is `r average(baseline_clean$age)``
+The average baseline age is `r mean(baseline_clean$current_age)``
 
 **What proportion of women in the study are APOE4 carriers?**
 
-The proportion of women in the study are APOE4 carriers is `r sum(baseline_clean$sex=='Female')/nrow(baseline$sex == 'Female')`
+The proportion of women in the study are APOE4 carriers is `r nrow(baseline_filterna%>%filter(sex=='Female'& apoe4 == 'APOE4 carrier'))/nrow(baseline_filterna%>%filter(sex=='Female'))`
 
 ```{r}
 amyloid <- read.csv("./data/mci_amyloid.csv",
