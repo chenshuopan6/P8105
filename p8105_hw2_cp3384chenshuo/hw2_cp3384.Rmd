@@ -156,6 +156,8 @@ combine_wheel <- gwynnda_clean%>%
 
 **Be sure to note the number of observations in the resulting dataset, and give examples of key variables.** 
 
+The resulting dataset contains `r nrow(combine_wheel)` rows and `r ncol(combine_wheel)` columns.Which means there are `r nrow(combine_wheel)` observations. Some examples of key variables: `dumpster` represents dumpter number.`Year,month,date` shows the time when data been collected. `weight_tons` records the weight of the garbage, `home_powered` calculates the number of households expected to be supplied . `wheel_name`indicates which sheet this record comes from.There are other variables include number of plastic bottles, etc.
+
 **For available data, what was the total weight of trash collected by Professor Trash Wheel?**
 
 
