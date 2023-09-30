@@ -126,44 +126,58 @@ gwynnda <- read_excel("./data/202207 Trash Wheel Collection Data.xlsx",
 ```
 
 ```{r}
+#clean trash table
 trash_clean <- trash%>%
+#Clean column names
   janitor::clean_names()%>%
+#create homes_powered variables calculating the average family number can supply
+#and add a label wheel_name to show where each data comes from.
   mutate(homes_powered = weight_tons * 500 / 30,
          wheel_name = "Mr")
 ```
 
 
 ```{r}
+#clean professor table
 professor_clean <- professor%>%
   janitor::clean_names()%>%
+#create homes_powered variables calculating the average family number can supply
+#and add a label wheel_name to show where each data comes from.
   mutate(homes_powered = weight_tons * 500 / 30,
          wheel_name = "professor")
 ```
 
 ```{r}
+#clean gwynndatable
 gwynnda_clean <-gwynnda%>%
   janitor::clean_names()%>%
+#create homes_powered variables calculating the average family number can supply
+#and add a label wheel_name to show where each data comes from.
   mutate(homes_powered = weight_tons * 500 / 30,
          wheel_name = "gwynnda")
 ```
 
 ```{r}
+#combine professor,trash and gwynnda dataset into one
 combine_wheel <- gwynnda_clean%>%
   bind_rows(professor_clean)%>%
-  bind_rows(trash_clean%>%mutate(year = as.numeric(year)))
+  bind_rows(trash_clean%>%mutate(year = as.numeric(year)))%>%
+  arrange(date)
 ```
 
 
 **Be sure to note the number of observations in the resulting dataset, and give examples of key variables.** 
 
+The resulting dataset contains `r nrow(combine_wheel)` rows and `r ncol(combine_wheel)` columns.Which means there are `r nrow(combine_wheel)` observations. Some examples of key variables: `dumpster` represents dumpter number.`Year,month,date` shows the time when data been collected. `weight_tons` records the weight of the garbage, `home_powered` calculates the number of households expected to be supplied . `wheel_name`indicates which sheet this record comes from.There are other variables include number of plastic bottles, etc.
+
 **For available data, what was the total weight of trash collected by Professor Trash Wheel?**
 
-
+The total weight of trash collected by Professor Trash Wheel is `r sum(professor_clean$weight_tons)`tons
 
 
 **What was the total number of cigarette butts collected by Gwynnda in July of 2021?**
 
-
+The total number of cigarette butts collected by Gwynnda in July of 2021 are `r gwynnda_clean%>%filter(month == 'July'&year == 2021)%>%summarize(sum = sum(cigarette_butts))%>%sum`
 
 
 
@@ -180,6 +194,7 @@ combine_wheel <- gwynnda_clean%>%
 # Question3:
 
 ```{r}
+#load MCI_baseline csv file
 baseline <- read.csv("./data/MCI_baseline.csv",
                       skip = 1,
                      na.strings = c("."))
@@ -188,17 +203,21 @@ baseline <- read.csv("./data/MCI_baseline.csv",
 
 
 ```{r}
+# clean baseline dataset
 baseline_clean <- baseline%>%
+# clean column names
   janitor::clean_names()%>%
+# encode sex =1 to Male and sex = 0 to Female
   mutate(sex = case_when(
       sex == 0 ~ "Female",
       sex == 1 ~ "Male"
     ),
+# encode apoe4 =1 to APOE4 carrier and apoe4 =0 to Female
     apoe4 = case_when(
       apoe4 == 0 ~ "APOE4 non-carrier",
       apoe4 == 1 ~ "APOE4 carrier"
     ))
-  
+# remove any participants who do not meet the stated inclusion criteria
 baseline_filterna <-baseline_clean%>%
   filter(!is.na(age_at_onset))
 ```
@@ -223,12 +242,15 @@ The average baseline age is `r mean(baseline_clean$current_age)``
 The proportion of women in the study are APOE4 carriers is `r nrow(baseline_filterna%>%filter(sex=='Female'& apoe4 == 'APOE4 carrier'))/nrow(baseline_filterna%>%filter(sex=='Female'))`
 
 ```{r}
+#load mci_amyloid.csv file
 amyloid <- read.csv("./data/mci_amyloid.csv",
                       skip = 1)
 ```
 
 ```{r}
+#clean amyloid dataset
 amyloid_clean <- amyloid%>%
+#clean and rename columns names reasonably
   janitor::clean_names()%>%
   rename(id = study_id,
          Baseline = baseline,
@@ -240,22 +262,40 @@ amyloid_clean <- amyloid%>%
 
 
 ```{r}
-amyloid_clean%>%
+# find the id appear in only the amyloid dataset
+only_amyloid<-amyloid_clean%>%
   anti_join(baseline_clean,by = "id")
+
+only_amyloid
 ```
 
 ```{r}
-baseline_clean%>%
+# find the id appear in only the baseline dataset
+only_baseline <- baseline_clean%>%
   anti_join(amyloid_clean,by = "id")
+
+
+only_baseline
 ```
 
+**Check whether some participants appear in only the baseline or amyloid datasets, and comment on your findings.**
+
+The data that exists in amyloid but not in baseline is the following ID：`r only_amyloid$id`
+
+The data that exists in baseline but not in amyloid is the following ID：`r only_baseline$id`
+
+There may be data loss, as all data from 484-495 is missing
 ```{r}
+#using inner_join to find the id appear in both dataset
 combine_mci <- inner_join(baseline_clean,amyloid_clean,by = "id")
 ```
 
 ```{r}
+#export the dataset
 write.csv(combine_mci,file = "./data/combine mci.csv", row.names = TRUE)
 ```
 
+**Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained, and briefly describe the resulting dataset; export the result as a CSV to your data directory.**
 
+After combination, there are totally `r nrow(combine_mci)` observations, The Key variables of this dataset are : `r names(combine_mci)`
 
